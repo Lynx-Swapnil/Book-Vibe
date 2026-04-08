@@ -10,11 +10,11 @@ const BookCard = ({ books }) => {
         {books.map((book) => (
           <Link key={book.bookId} to={`/bookDetails/${book.bookId}`}>
             <div className="rounded-2xl border border-gray-300 bg-white p-4 transition hover:shadow-md">
-              <figure className="rounded-2xl bg-[#f0f0f0] p-6 flex items-center justify-center min-h-[280px]">
+              <figure className="rounded-2xl bg-[#f0f0f0] p-6 flex items-center justify-center min-h-70">
                 <img
                   src={book.image}
                   alt={book.bookName}
-                  className="h-[220px] w-auto object-contain"
+                  className="h-55 w-auto object-contain"
                 />
               </figure>
               <div className="mt-4 space-y-3">

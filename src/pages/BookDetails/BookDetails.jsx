@@ -36,11 +36,11 @@ const {
     return (
     <section className="w-11/12 max-w-6xl mx-auto mt-2 mb-8">
       <div className="grid grid-cols-1 gap-8 rounded-2xl bg-white p-5 lg:grid-cols-2 lg:gap-10 lg:p-6">
-        <figure className="flex items-center justify-center rounded-2xl bg-[#f2f2f2] p-8 lg:min-h-[560px]">
+        <figure className="flex items-center justify-center rounded-2xl bg-[#f2f2f2] p-8 lg:min-h-140">
           <img
             src={image}
             alt={bookName}
-            className="h-[360px] w-auto object-contain lg:h-[460px]"
+            className="h-90 w-auto object-contain lg:h-115"
           />
         </figure>
 
@@ -71,19 +71,19 @@ const {
 
           <div className="space-y-2 border-y border-gray-200 py-4 text-base">
             <div className="flex items-center gap-3">
-              <span className="min-w-[150px] text-gray-500">Number of Pages:</span>
+              <span className="min-w-37.5 text-gray-500">Number of Pages:</span>
               <span className="font-bold text-gray-800">{totalPages}</span>
             </div>
             <div className="flex items-center gap-3">
-              <span className="min-w-[150px] text-gray-500">Publisher:</span>
+              <span className="min-w-37.5 text-gray-500">Publisher:</span>
               <span className="font-bold text-gray-800">{publisher}</span>
             </div>
             <div className="flex items-center gap-3">
-              <span className="min-w-[150px] text-gray-500">Year of Publishing:</span>
+              <span className="min-w-37.5 text-gray-500">Year of Publishing:</span>
               <span className="font-bold text-gray-800">{yearOfPublishing}</span>
             </div>
             <div className="flex items-center gap-3">
-              <span className="min-w-[150px] text-gray-500">Rating:</span>
+              <span className="min-w-37.5 text-gray-500">Rating:</span>
               <span className="font-bold text-gray-800">{rating}</span>
             </div>
           </div>

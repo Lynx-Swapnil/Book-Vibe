@@ -9,7 +9,7 @@ const Banner = () => {
           <img
             src={bookImg}
             alt="Book cover"
-            className="w-[210px] object-contain drop-shadow-xl lg:w-[280px]"
+            className="w-52.5 object-contain drop-shadow-xl lg:w-70"
           />
           <div className="max-w-xl text-center lg:text-left">
             <h1 className="text-4xl font-bold leading-tight text-gray-900 sm:text-5xl lg:text-6xl">
