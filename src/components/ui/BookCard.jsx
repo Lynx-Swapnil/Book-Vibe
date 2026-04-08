@@ -1,16 +1,50 @@
-import React from 'react';
+import React, { useContext, useMemo } from 'react';
 import { FaRegStar } from 'react-icons/fa';
-import { Link } from 'react-router';
+import { Link, useLocation } from 'react-router';
+import { BookContext } from '../../context/BookContext';
 
 const BookCard = ({ books }) => {
+  const { storedBooks, wishlist } = useContext(BookContext);
+  const location = useLocation();
+
+  const readBookIds = useMemo(
+    () => new Set(storedBooks.map((book) => Number(book.bookId))),
+    [storedBooks],
+  );
+
+  const wishlistBookIds = useMemo(
+    () => new Set(wishlist.map((book) => Number(book.bookId))),
+    [wishlist],
+  );
+
   return (
     <div className="my-12 w-11/12 max-w-6xl mx-auto">
-      <h2 className="text-5xl font-bold text-center mb-8">Books</h2>
+      <h2 className="title-font mb-8 text-center text-4xl font-black text-[#2f2118] md:text-5xl">Books</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {books.map((book) => (
-          <Link key={book.bookId} to={`/bookDetails/${book.bookId}`}>
-            <div className="rounded-2xl border border-gray-300 bg-white p-4 transition hover:shadow-md">
-              <figure className="rounded-2xl bg-[#f0f0f0] p-6 flex items-center justify-center min-h-70">
+        {books.map((book) => {
+          const isRead = readBookIds.has(Number(book.bookId));
+          const isWishlisted = wishlistBookIds.has(Number(book.bookId));
+
+          return (
+          <Link
+            key={book.bookId}
+            to={`/bookDetails/${book.bookId}`}
+            preventScrollReset
+            state={{ from: `${location.pathname}${location.search}` }}
+          >
+            <div className="relative rounded-3xl border border-[#f2dccb] bg-white p-4 shadow-[0_10px_25px_rgba(110,66,32,0.08)] transition hover:-translate-y-1 hover:shadow-[0_18px_35px_rgba(110,66,32,0.14)]">
+              {isRead && (
+                <span className="absolute right-4 top-4 z-10 rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700 shadow-sm">
+                  Marked as Read
+                </span>
+              )}
+              {!isRead && isWishlisted && (
+                <span className="absolute right-4 top-4 z-10 rounded-full bg-sky-100 px-3 py-1 text-xs font-semibold text-sky-700 shadow-sm">
+                  Added to Wishlist
+                </span>
+              )}
+
+              <figure className="flex min-h-70 items-center justify-center rounded-2xl bg-[#fff5eb] p-6">
                 <img
                   src={book.image}
                   alt={book.bookName}
@@ -22,20 +56,20 @@ const BookCard = ({ books }) => {
                   {book.tags.map((tag) => (
                     <span
                       key={tag}
-                      className="rounded-full bg-green-100 px-3 py-1 text-sm font-semibold text-green-600"
+                      className="rounded-full bg-orange-100 px-3 py-1 text-sm font-semibold text-orange-700"
                     >
                       {tag}
                     </span>
                   ))}
                 </div>
-                <h2 className="text-3xl font-bold leading-tight text-gray-900">
+                <h2 className="title-font text-2xl font-black leading-tight text-[#2f2118] lg:text-3xl">
                   {book.bookName}
                 </h2>
-                <p className="text-lg font-medium text-gray-700">By : {book.author}</p>
-                <hr className="border-dashed border-gray-300" />
+                <p className="text-lg font-medium text-[#674c3b]">By : {book.author}</p>
+                <hr className="border-dashed border-[#f2dccb]" />
                 <div className="flex items-center justify-between pt-2 text-base">
-                  <span className="font-medium text-gray-700">{book.category}</span>
-                  <span className="inline-flex items-center gap-2 font-medium text-gray-700">
+                  <span className="rounded-full bg-orange-50 px-3 py-1 font-semibold text-orange-700">{book.category}</span>
+                  <span className="inline-flex items-center gap-2 font-semibold text-[#674c3b]">
                     {Number(book.rating).toFixed(2)}
                     <FaRegStar />
                   </span>
@@ -43,7 +77,7 @@ const BookCard = ({ books }) => {
               </div>
             </div>
           </Link>
-        ))}
+        )})}
       </div>
   </div>
   );

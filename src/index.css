@@ -1,7 +1,39 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Manrope:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
 @plugin "daisyui";
 
+:root {
+	--ink: #2f2118;
+	--body: #5b4739;
+	--soft: #fff4ea;
+	--accent: #f97316;
+	--accent-deep: #c2410c;
+	--teal: #0f766e;
+	--line: #f2dccb;
+}
+
+html,
+body,
+#root {
+	min-height: 100%;
+}
+
 body {
-	font-family: 'Playfair Display', serif;
+	font-family: 'Manrope', sans-serif;
+	color: var(--body);
+	background:
+		radial-gradient(circle at 5% 0%, rgba(249, 115, 22, 0.16), transparent 32%),
+		radial-gradient(circle at 95% 12%, rgba(13, 148, 136, 0.14), transparent 28%),
+		linear-gradient(180deg, #fffdfb 0%, #fff7f0 52%, #fffdfb 100%);
+}
+
+.title-font {
+	font-family: 'Archivo Black', sans-serif;
+	letter-spacing: 0.01em;
+}
+
+.surface-card {
+	border: 1px solid var(--line);
+	background: rgba(255, 255, 255, 0.92);
+	box-shadow: 0 14px 34px rgba(110, 66, 32, 0.08);
 }
