@@ -2,18 +2,19 @@ import React, { useContext, useMemo } from 'react';
 import { FaRegStar } from 'react-icons/fa';
 import { Link, useLocation } from 'react-router';
 import { BookContext } from '../../context/BookContext';
+import { getSafeTags, normalizeBookId } from '../../utils/bookUtils';
 
 const BookCard = ({ books }) => {
   const { storedBooks, wishlist } = useContext(BookContext);
   const location = useLocation();
 
   const readBookIds = useMemo(
-    () => new Set(storedBooks.map((book) => Number(book.bookId))),
+    () => new Set(storedBooks.map((book) => normalizeBookId(book))),
     [storedBooks],
   );
 
   const wishlistBookIds = useMemo(
-    () => new Set(wishlist.map((book) => Number(book.bookId))),
+    () => new Set(wishlist.map((book) => normalizeBookId(book))),
     [wishlist],
   );
 
@@ -22,13 +23,19 @@ const BookCard = ({ books }) => {
       <h2 className="title-font mb-8 text-center text-4xl font-black text-[#2f2118] md:text-5xl">Books</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {books.map((book) => {
-          const isRead = readBookIds.has(Number(book.bookId));
-          const isWishlisted = wishlistBookIds.has(Number(book.bookId));
+          const safeBookId = normalizeBookId(book);
+          const safeBookName = book?.bookName || 'Untitled Book';
+          const safeAuthor = book?.author || 'Unknown Author';
+          const safeCategory = book?.category || 'Uncategorized';
+          const safeRating = Number(book?.rating || 0).toFixed(2);
+          const safeTags = getSafeTags(book?.tags);
+          const isRead = readBookIds.has(safeBookId);
+          const isWishlisted = wishlistBookIds.has(safeBookId);
 
           return (
           <Link
-            key={book.bookId}
-            to={`/bookDetails/${book.bookId}`}
+            key={safeBookId || safeBookName}
+            to={`/bookDetails/${safeBookId}`}
             preventScrollReset
             state={{ from: `${location.pathname}${location.search}` }}
           >
@@ -47,13 +54,13 @@ const BookCard = ({ books }) => {
               <figure className="flex min-h-70 items-center justify-center rounded-2xl bg-[#fff5eb] p-6">
                 <img
                   src={book.image}
-                  alt={book.bookName}
+                  alt={safeBookName}
                   className="h-55 w-auto object-contain"
                 />
               </figure>
               <div className="mt-4 space-y-3">
                 <div className="flex flex-wrap gap-2">
-                  {book.tags.map((tag) => (
+                  {safeTags.map((tag) => (
                     <span
                       key={tag}
                       className="rounded-full bg-orange-100 px-3 py-1 text-sm font-semibold text-orange-700"
@@ -63,14 +70,14 @@ const BookCard = ({ books }) => {
                   ))}
                 </div>
                 <h2 className="title-font text-2xl font-black leading-tight text-[#2f2118] lg:text-3xl">
-                  {book.bookName}
+                  {safeBookName}
                 </h2>
-                <p className="text-lg font-medium text-[#674c3b]">By : {book.author}</p>
+                <p className="text-lg font-medium text-[#674c3b]">By : {safeAuthor}</p>
                 <hr className="border-dashed border-[#f2dccb]" />
                 <div className="flex items-center justify-between pt-2 text-base">
-                  <span className="rounded-full bg-orange-50 px-3 py-1 font-semibold text-orange-700">{book.category}</span>
+                  <span className="rounded-full bg-orange-50 px-3 py-1 font-semibold text-orange-700">{safeCategory}</span>
                   <span className="inline-flex items-center gap-2 font-semibold text-[#674c3b]">
-                    {Number(book.rating).toFixed(2)}
+                    {safeRating}
                     <FaRegStar />
                   </span>
                 </div>

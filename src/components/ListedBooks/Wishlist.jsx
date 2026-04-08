@@ -1,19 +1,12 @@
 import React, { useContext } from 'react';
 import { BookContext } from '../../context/BookContext';
 import ListedBookCard from './ListedBookCard';
+import { sortBooksByType } from '../../utils/bookUtils';
 
 const Wishlist = ({ sortingType }) => {
     const { wishlist } = useContext(BookContext);
 
-    const sortedWishlist = [...wishlist];
-
-    if (sortingType === 'rating') {
-        sortedWishlist.sort((a, b) => b.rating - a.rating);
-    } else if (sortingType === 'pages') {
-        sortedWishlist.sort((a, b) => b.totalPages - a.totalPages);
-    } else if (sortingType === 'year') {
-        sortedWishlist.sort((a, b) => b.yearOfPublishing - a.yearOfPublishing);
-    }
+    const sortedWishlist = sortBooksByType(wishlist, sortingType);
 
     return (
         <div className="mt-6 space-y-5">

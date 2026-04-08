@@ -1,12 +1,39 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+import { useSearchParams } from 'react-router';
 import 'react-tabs/style/react-tabs.css';
 import MarkAsReadList from '../../components/ListedBooks/MarkAsReadList';
 import Wishlist from '../../components/ListedBooks/Wishlist';
 import { IoChevronDownOutline } from 'react-icons/io5';
 
 const Books = () => {
-    const [sortingType, setSortingType] = useState('');
+    const [searchParams, setSearchParams] = useSearchParams();
+
+    const sortingType = searchParams.get('sort') || '';
+    const selectedTab = searchParams.get('tab') || 'read';
+    const selectedTabIndex = selectedTab === 'wishlist' ? 1 : 0;
+
+    const updateQueryParams = ({ sort, tab }) => {
+        const nextParams = new URLSearchParams(searchParams);
+
+        if (sort !== undefined) {
+            if (sort) {
+                nextParams.set('sort', sort);
+            } else {
+                nextParams.delete('sort');
+            }
+        }
+
+        if (tab !== undefined) {
+            if (tab) {
+                nextParams.set('tab', tab);
+            } else {
+                nextParams.delete('tab');
+            }
+        }
+
+        setSearchParams(nextParams, { replace: true });
+    };
 
     const activeSortLabel =
         sortingType === 'rating'
@@ -32,15 +59,18 @@ const Books = () => {
                         <IoChevronDownOutline className="text-2xl" />
                     </div>
                     <ul tabIndex={0} className="dropdown-content menu mt-2 w-72 rounded-2xl border border-[#f2dccb] bg-white p-3 text-center text-base font-medium text-[#624938] shadow-xl">
-                        <li onClick={() => setSortingType('')}><a className="justify-center rounded-lg py-2 hover:bg-[#fff4ea]">Default</a></li>
-                        <li onClick={() => setSortingType('rating')}><a className="justify-center rounded-lg py-2 hover:bg-[#fff4ea]">Rating</a></li>
-                        <li onClick={() => setSortingType('pages')}><a className="justify-center rounded-lg py-2 hover:bg-[#fff4ea]">Number of pages</a></li>
-                        <li onClick={() => setSortingType('year')}><a className="justify-center rounded-lg py-2 hover:bg-[#fff4ea]">Publisher year</a></li>
+                        <li onClick={() => updateQueryParams({ sort: '' })}><a className="justify-center rounded-lg py-2 hover:bg-[#fff4ea]">Default</a></li>
+                        <li onClick={() => updateQueryParams({ sort: 'rating' })}><a className="justify-center rounded-lg py-2 hover:bg-[#fff4ea]">Rating</a></li>
+                        <li onClick={() => updateQueryParams({ sort: 'pages' })}><a className="justify-center rounded-lg py-2 hover:bg-[#fff4ea]">Number of pages</a></li>
+                        <li onClick={() => updateQueryParams({ sort: 'year' })}><a className="justify-center rounded-lg py-2 hover:bg-[#fff4ea]">Publisher year</a></li>
                     </ul>
                 </div>
             </div>
             
-            <Tabs>
+            <Tabs
+                selectedIndex={selectedTabIndex}
+                onSelect={(index) => updateQueryParams({ tab: index === 0 ? 'read' : 'wishlist' })}
+            >
                 <TabList className="mb-4 flex items-center gap-2 border-b border-[#f2dccb] pb-2">
                     <Tab className="cursor-pointer rounded-full border border-transparent px-6 py-2 text-base font-semibold text-[#7f6353] outline-none transition" selectedClassName="!border-orange-200 !bg-orange-50 !text-orange-700">
                         Read Books

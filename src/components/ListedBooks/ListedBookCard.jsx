@@ -5,23 +5,22 @@ import { HiOutlineUsers } from 'react-icons/hi2';
 import { IoDocumentTextOutline } from 'react-icons/io5';
 import { MdDeleteOutline } from 'react-icons/md';
 import { BookContext } from '../../context/BookContext';
+import { getSafeTags, normalizeBookId } from '../../utils/bookUtils';
 
 const ListedBookCard = ({ book, listType }) => {
   const { handleRemoveFromRead, handleRemoveFromWishlist } = useContext(BookContext);
   const location = useLocation();
 
-  const {
-    bookId,
-    bookName,
-    author,
-    tags,
-    yearOfPublishing,
-    publisher,
-    totalPages,
-    category,
-    rating,
-    image,
-  } = book;
+  const bookId = normalizeBookId(book);
+  const bookName = book?.bookName || 'Untitled Book';
+  const author = book?.author || 'Unknown Author';
+  const tags = getSafeTags(book?.tags);
+  const yearOfPublishing = book?.yearOfPublishing || 'N/A';
+  const publisher = book?.publisher || 'Unknown Publisher';
+  const totalPages = book?.totalPages || 'N/A';
+  const category = book?.category || 'Uncategorized';
+  const rating = Number(book?.rating || 0);
+  const image = book?.image;
 
   const handleDelete = () => {
     const confirmMessage =

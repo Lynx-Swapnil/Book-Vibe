@@ -2,6 +2,7 @@ import { useContext } from 'react';
 import { useLoaderData, useLocation, useNavigate, useParams } from 'react-router';
 import { BookContext } from '../../context/BookContext';
 import { IoClose } from 'react-icons/io5';
+import { getSafeTags, normalizeBookId } from '../../utils/bookUtils';
 
 const BookDetails = () => {
 
@@ -13,10 +14,11 @@ const BookDetails = () => {
 
     const { handleMarkAsRead, handleWishlist, storedBooks, wishlist } = useContext(BookContext);
 
-    const expectedBook = books.find(book => book.bookId === Number(bookParamsId));
+    const normalizedBookParamId = normalizeBookId(bookParamsId);
+    const expectedBook = books.find(book => normalizeBookId(book) === normalizedBookParamId);
 
-    const isInReadList = storedBooks.some(book => book.bookId === Number(bookParamsId));
-    const isInWishlist = wishlist.some(book => book.bookId === Number(bookParamsId));
+    const isInReadList = storedBooks.some(book => normalizeBookId(book) === normalizedBookParamId);
+    const isInWishlist = wishlist.some(book => normalizeBookId(book) === normalizedBookParamId);
 
     const isMarkAsReadDisabled = isInReadList;
     const isWishlistDisabled = isInWishlist || isInReadList;
@@ -42,17 +44,19 @@ const BookDetails = () => {
     }
     
 const {
-  bookName,
-  author,
-  category,
-  review,
+  bookName = 'Untitled Book',
+  author = 'Unknown Author',
+  category = 'Uncategorized',
+  review = 'No review available for this book.',
   image,
-  totalPages,
-  rating,
+  totalPages = 'N/A',
+  rating = 'N/A',
   tags,
-  publisher,
-  yearOfPublishing
+  publisher = 'Unknown Publisher',
+  yearOfPublishing = 'N/A'
 } = expectedBook;
+
+const safeTags = getSafeTags(tags);
 
     return (
     <section className="fixed inset-0 z-60 overflow-y-auto bg-black/55 p-2 md:p-3">
@@ -90,7 +94,7 @@ const {
 
             <div className="flex flex-wrap items-center gap-3">
               <span className="text-sm font-bold text-[#2f2118]">Tag</span>
-              {tags.map((tag) => (
+              {safeTags.map((tag) => (
                 <span
                   key={tag}
                   className="rounded-full bg-orange-100 px-2.5 py-1 text-xs font-semibold text-orange-700"

@@ -10,19 +10,28 @@ const AllBooks = () => {
     const books = use(booksPromise);
 
     const categories = useMemo(() => {
-        return ['all', ...new Set(books.map((book) => book.category))];
+        const categorySet = new Set(
+            books
+                .map((book) => book?.category)
+                .filter(Boolean)
+        );
+
+        return ['all', ...categorySet];
     }, [books]);
 
     const filteredBooks = useMemo(() => {
         const normalizedSearch = searchText.trim().toLowerCase();
 
         return books.filter((book) => {
+            const safeBookName = (book?.bookName || '').toLowerCase();
+            const safeAuthor = (book?.author || '').toLowerCase();
+
             const matchesSearch =
                 normalizedSearch.length === 0 ||
-                book.bookName.toLowerCase().includes(normalizedSearch) ||
-                book.author.toLowerCase().includes(normalizedSearch);
+                safeBookName.includes(normalizedSearch) ||
+                safeAuthor.includes(normalizedSearch);
 
-            const matchesCategory = selectedCategory === 'all' || book.category === selectedCategory;
+            const matchesCategory = selectedCategory === 'all' || book?.category === selectedCategory;
 
             return matchesSearch && matchesCategory;
         });

@@ -1,19 +1,12 @@
 import React, { useContext } from 'react';
 import { BookContext } from '../../context/BookContext';
 import ListedBookCard from './ListedBookCard';
+import { sortBooksByType } from '../../utils/bookUtils';
 
 const MarkAsReadList = ({ sortingType }) => {
     const { storedBooks } = useContext(BookContext);
 
-    const filterMarkedAsReadBooks = [...storedBooks];
-
-    if (sortingType === 'rating') {
-        filterMarkedAsReadBooks.sort((a, b) => b.rating - a.rating);
-    } else if (sortingType === 'pages') {
-        filterMarkedAsReadBooks.sort((a, b) => b.totalPages - a.totalPages);
-    } else if (sortingType === 'year') {
-        filterMarkedAsReadBooks.sort((a, b) => b.yearOfPublishing - a.yearOfPublishing);
-    }
+    const filterMarkedAsReadBooks = sortBooksByType(storedBooks, sortingType);
 
     return (
         <div className="mt-6 space-y-5">
