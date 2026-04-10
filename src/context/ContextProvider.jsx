@@ -1,11 +1,25 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BookContext } from './BookContext';
 import { toast } from 'react-toastify';
 import { normalizeBookId } from '../utils/bookUtils';
+import {
+  getAllReadListFromLocalDB,
+  getAllWishlistFromLocalDB,
+  saveAllReadListToLocalDB,
+  saveAllWishlistToLocalDB,
+} from '../utils/localDB';
 
 const ContextProvider = ({ children }) => {
-    const [storedBooks, setStoredBooks] = useState([]);
-    const [wishlist, setWishlist] = useState([]);
+    const [storedBooks, setStoredBooks] = useState(() => getAllReadListFromLocalDB());
+    const [wishlist, setWishlist] = useState(() => getAllWishlistFromLocalDB());
+
+  useEffect(() => {
+    saveAllReadListToLocalDB(storedBooks);
+  }, [storedBooks]);
+
+  useEffect(() => {
+    saveAllWishlistToLocalDB(wishlist);
+  }, [wishlist]);
 
   const showUndoToast = (message, onUndo) => {
     toast.info(
@@ -40,12 +54,12 @@ const ContextProvider = ({ children }) => {
    else {
     const isInWishlist = wishlist.find(book => normalizeBookId(book) === normalizedId);
     if (isInWishlist) {
-      setWishlist(wishlist.filter(book => normalizeBookId(book) !== normalizedId));
+      setWishlist((prev) => prev.filter((book) => normalizeBookId(book) !== normalizedId));
       toast.info(`${currentBook.bookName} removed from wishlist and moved to read list.`);
     }
 
     toast.success(`${currentBook.bookName} is added to your read list!`);
-    setStoredBooks([...storedBooks, currentBook]);
+    setStoredBooks((prev) => [...prev, currentBook]);
    }
   }
 
@@ -67,7 +81,7 @@ const ContextProvider = ({ children }) => {
    }
    else {
     toast.success(`${currentBook.bookName} is added to your wishlist!`);
-    setWishlist([...wishlist, currentBook]);
+    setWishlist((prev) => [...prev, currentBook]);
    }
   }
 
@@ -79,7 +93,7 @@ const ContextProvider = ({ children }) => {
       return;
     }
 
-    setStoredBooks(storedBooks.filter(book => normalizeBookId(book) !== normalizedId));
+    setStoredBooks((prev) => prev.filter((book) => normalizeBookId(book) !== normalizedId));
     showUndoToast(`${removedBook.bookName} removed from read list.`, () => {
       setStoredBooks((prev) => [...prev, removedBook]);
     });
@@ -93,7 +107,7 @@ const ContextProvider = ({ children }) => {
       return;
     }
 
-    setWishlist(wishlist.filter(book => normalizeBookId(book) !== normalizedId));
+    setWishlist((prev) => prev.filter((book) => normalizeBookId(book) !== normalizedId));
     showUndoToast(`${removedBook.bookName} removed from wishlist.`, () => {
       setWishlist((prev) => [...prev, removedBook]);
     });
