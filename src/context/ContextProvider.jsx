@@ -1,7 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { BookContext } from './BookContext';
 import { toast } from 'react-toastify';
-import { normalizeBookId } from '../utils/bookUtils';
+import {
+  findBookById,
+  hasBookById,
+  normalizeBookId,
+  removeBookById,
+  restoreBookIfMissing,
+} from '../utils/bookUtils';
 import {
   getAllReadListFromLocalDB,
   getAllWishlistFromLocalDB,
@@ -24,15 +30,16 @@ const ContextProvider = ({ children }) => {
   const showUndoToast = (message, onUndo) => {
     toast.info(
       ({ closeToast }) => (
-        <div className="flex items-center gap-3">
-          <span className="text-sm">{message}</span>
+        <div className="flex w-full items-center gap-3">
+          <span className="min-w-0 flex-1 text-sm">{message}</span>
           <button
             type="button"
             onClick={() => {
               onUndo();
               closeToast?.();
             }}
-            className="rounded bg-white/90 px-2 py-1 text-xs font-bold text-gray-900"
+            aria-label="Undo last action"
+            className="shrink-0 whitespace-nowrap rounded bg-white/90 px-2 py-1 text-xs font-bold text-gray-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500"
           >
             Undo
           </button>
@@ -45,35 +52,35 @@ const ContextProvider = ({ children }) => {
   const handleMarkAsRead = (currentBook) => {
    const normalizedId = normalizeBookId(currentBook);
 
-   const isbookAlreadyMarked =  storedBooks.find(book => normalizeBookId(book) === normalizedId);
+   const isbookAlreadyMarked = hasBookById(storedBooks, normalizedId);
 
    if(isbookAlreadyMarked) {
     toast.error('You have already marked this book as read.');
     return;
    }
    else {
-    const isInWishlist = wishlist.find(book => normalizeBookId(book) === normalizedId);
+    const isInWishlist = hasBookById(wishlist, normalizedId);
     if (isInWishlist) {
-      setWishlist((prev) => prev.filter((book) => normalizeBookId(book) !== normalizedId));
+      setWishlist((prev) => removeBookById(prev, normalizedId).nextBooks);
       toast.info(`${currentBook.bookName} removed from wishlist and moved to read list.`);
     }
 
     toast.success(`${currentBook.bookName} is added to your read list!`);
-    setStoredBooks((prev) => [...prev, currentBook]);
+    setStoredBooks((prev) => restoreBookIfMissing(prev, currentBook));
    }
   }
 
   const handleWishlist = (currentBook) => {
   const normalizedId = normalizeBookId(currentBook);
    
-  const isExistInMarkedAsReadlist = storedBooks.find(book => normalizeBookId(book) === normalizedId);
+  const isExistInMarkedAsReadlist = hasBookById(storedBooks, normalizedId);
 
   if(isExistInMarkedAsReadlist) {
     toast.error('You have already marked this book as read. You cannot add it to your wishlist.');
     return;
    }
    
-  const isbookAlreadyInWishlist = wishlist.find(book => normalizeBookId(book) === normalizedId);
+  const isbookAlreadyInWishlist = hasBookById(wishlist, normalizedId);
 
    if(isbookAlreadyInWishlist) {
     toast.error('This book is already in your wishlist.');
@@ -87,29 +94,29 @@ const ContextProvider = ({ children }) => {
 
   const handleRemoveFromRead = (bookId) => {
     const normalizedId = normalizeBookId(bookId);
-    const removedBook = storedBooks.find(book => normalizeBookId(book) === normalizedId);
+    const removedBook = findBookById(storedBooks, normalizedId);
 
     if (!removedBook) {
       return;
     }
 
-    setStoredBooks((prev) => prev.filter((book) => normalizeBookId(book) !== normalizedId));
+    setStoredBooks((prev) => removeBookById(prev, normalizedId).nextBooks);
     showUndoToast(`${removedBook.bookName} removed from read list.`, () => {
-      setStoredBooks((prev) => [...prev, removedBook]);
+      setStoredBooks((prev) => restoreBookIfMissing(prev, removedBook));
     });
   }
 
   const handleRemoveFromWishlist = (bookId) => {
     const normalizedId = normalizeBookId(bookId);
-    const removedBook = wishlist.find(book => normalizeBookId(book) === normalizedId);
+    const removedBook = findBookById(wishlist, normalizedId);
 
     if (!removedBook) {
       return;
     }
 
-    setWishlist((prev) => prev.filter((book) => normalizeBookId(book) !== normalizedId));
+    setWishlist((prev) => removeBookById(prev, normalizedId).nextBooks);
     showUndoToast(`${removedBook.bookName} removed from wishlist.`, () => {
-      setWishlist((prev) => [...prev, removedBook]);
+      setWishlist((prev) => restoreBookIfMissing(prev, removedBook));
     });
   }
 

@@ -12,7 +12,14 @@ createRoot(document.getElementById('root')).render(
   <StrictMode>
     <ContextProvider>
       <RouterProvider router={router} />
-      <ToastContainer position="top-right" autoClose={2000} />
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        toastStyle={{
+          minWidth: '340px',
+          borderRadius: '14px',
+        }}
+      />
     </ContextProvider>
   </StrictMode>,
 )

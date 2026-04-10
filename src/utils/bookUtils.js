@@ -6,6 +6,41 @@ export const normalizeBookId = (bookOrId) => {
   return Number(bookOrId);
 };
 
+export const hasBookById = (books, bookOrId) => {
+  const normalizedId = normalizeBookId(bookOrId);
+  return books.some((book) => normalizeBookId(book) === normalizedId);
+};
+
+export const findBookById = (books, bookOrId) => {
+  const normalizedId = normalizeBookId(bookOrId);
+  return books.find((book) => normalizeBookId(book) === normalizedId);
+};
+
+export const removeBookById = (books, bookOrId) => {
+  const normalizedId = normalizeBookId(bookOrId);
+  const removedBook = findBookById(books, normalizedId);
+
+  if (!removedBook) {
+    return {
+      nextBooks: books,
+      removedBook: null,
+    };
+  }
+
+  return {
+    nextBooks: books.filter((book) => normalizeBookId(book) !== normalizedId),
+    removedBook,
+  };
+};
+
+export const restoreBookIfMissing = (books, book) => {
+  if (!book || hasBookById(books, book)) {
+    return books;
+  }
+
+  return [...books, book];
+};
+
 export const sortBooksByType = (books, sortingType) => {
   const sortedBooks = [...books];
 
